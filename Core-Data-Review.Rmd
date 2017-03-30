@@ -1,0 +1,231 @@
+---
+title: "Core Sequencing Stats Review"
+output: pdf_document
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+author: julienka@buffalo.edu, jbard@buffalo.edu
+---
+```{r include = FALSE, warning = FALSE,tidy=TRUE}
+# tell to use library
+library(ggplot2)
+library(rmarkdown)
+library(knitr)
+```
+```{r include=FALSE, warning=FALSE,tidy=TRUE}
+setwd('~/')
+#quarterly <- read.csv('quarterly.txt', sep = "\t", header = TRUE)
+#mquarterly <- read.csv('Final.Miseq.txt', sep = "\t", header = TRUE)
+#rapid <- read.csv('rapid-run.csv',sep=",", header = TRUE)
+allruns <- read.csv('all-runs.txt',sep="\t",header=TRUE)
+#allmiseq <- read.csv('all-miseq.txt',sep="\t",header=TRUE)
+pass=c(9,2,6,12)
+fail=c(63,48,34,24)
+total=c(72,50,40,36)
+percentage=c(0.125,0.04,0.15,0.333)
+summaryphix=as.matrix(cbind(pass,fail,total,percentage),nrow=4,ncol=1)
+names <- c("Q1","Q2","Q3","Q4")
+rownames(summaryphix) <- names
+allruns$Quarterly=factor(allruns$Quarterly,c("Q2-2013","Q3-2013","Q4-2013","Q1-2014","Q2-2014","Q3-2014","Q4-2014","Q1-2015","Q2-2015","Q3-2015","Q4-2015","Q1-2016","Q2-2016","Q3-2016","Q4-2016","Q1-2017"))
+
+allmiseq$Quarterly=factor(allmiseq$Quarterly,c("Q2-2013","Q3-2013","Q4-2013","Q1-2014","Q2-2014","Q3-2014","Q4-2014","Q1-2015","Q2-2015","Q3-2015","Q4-2015","Q1-2016","Q2-2016","Q3-2016","Q4-2016","Q1-2017"))
+
+allHighoutput <- allruns[which(allruns$Type=='High-Output'), ]
+allRapid <- allruns[which(allruns$Type=='Rapid'), ]
+miseq <- allmiseq[which(allruns$Type=='Miseq'), ]
+nano <- allmiseq[which(allruns$Type == 'Nano'), ]
+
+```
+
+This document is areview of sequencing QC metrics from Q2-2013 to Q1-2017 It is an aggregation of all flowcell lanes since Basespace adoption in 2013. A total of 860 lanes of sequencing was preformed on the HiSeq2500s, and an additional 82 lanes of sequencing on the MiSeq platform.
+
+##### Outline
+###### Reviewing Core Preformance Over Time
+1. Aggregate HiSeq2500 Preformance Review
++ phiX spike-in rates (w/outliers)
++ phiX spike-in rates (wo/outliers)
++ High-output cluster density 
++ Rapid-run cluster density
++ High-output % >=Q30
++ Rapid-run % >= Q30
++ High-output total reads pass filter
++ Rapid-run total reads pass filter
+2. 2016 HiSeq2500 Preformance Review
++ HiSeq phiX rates (2016)
++ HiSeq CV pool rates (2016)
+3. MiSeq Preformance Review
++ phiX spike-in rates (2016)
++ Total reads pass filter
+
+\pagebreak
+
+# 1.) Aggregate HiSeq Preformance Review:
+
+## HiSeq2500 phiX spike-in rates
+
+Technicians spike-in 1.00% phiX to all sequencing lanes in order to both monitor instrument preformance, and gauge how accurately we are loading the flowcells. ~100.00% Spike-in is expected for control lanes, while other lanes should be ~1.00%      
+
+```{r echo=FALSE}
+par(cex.axis=.6)
+boxplot(data=allruns,phiX~Quarterly, outline = TRUE, ylab = "Alignment Percentage",las=2)
+title("With Outliers", line = 0.5,)
+abline(h = .8, col = "red", lwd =1,lty=2)
+abline(h = 1.2, col = "red", lwd =1,lty=2)
+```
+
+
+
+```{r echo=FALSE}
+par(cex.axis=.6)
+boxplot(data=allruns,phiX~Quarterly, outline = FALSE, ylab = "Alignment Percentage",las=2)
+title("Removing Outliers", line = 0.5)
+abline(h = .8, col = "red", lwd =1,lty=2)
+abline(h = 1.2, col = "red", lwd =1,lty=2)
+```
+
+* Propel certification requires all eight lanes of seuqencing to fall within 0.8% to 1.2% phiX.
+\pagebreak
+
+## HiSeq Preformance Review: Cluster Density
+
+Cluster density measures the amount of clusterable DNA that has ligated to the flowcell. Note, upper-bounds (over 1050k/mm2) start to become innacurate due to saturation.    
+<br>
+<br>
+```{r echo=FALSE}
+par(cex.axis=.6)
+boxplot(data=allHighoutput,Density~Quarterly, outline = TRUE, ylab = "Density k/mm2",las=2)
+title("High-output Density k/mm2", line = 0.5,)
+abline(h = 750, col = "blue", lwd =1,lty=2)
+abline(h = 850, col = "blue", lwd =1,lty=2)
+abline(h = 950, col = "red", lwd =1,lty=2)
+abline(h = 1050, col = "red", lwd =1,lty=2)
+```
+
+* High-output thresholds for V3 chemistry (in blue): 750-850k/mm2
+* High-output thresholds for V4 chemistry (in red) : 950-1050k/mm2
+
+``` {r echo=FALSE}
+par(cex.axis=.6)
+boxplot(data=allRapid,Density~Quarterly, outline = TRUE, ylab = "Density k/mm2",las=2)
+title("Rapid-Run Density k/mm2", line = 0.5,)
+abline(h = 850, col = "red", lwd =1,lty=2)
+abline(h = 1000, col = "red", lwd =1,lty=2)
+
+```
+
+* Rapid-run thresholds for V2 Chemistry (in red) : 850-1000k/mm2
+
+\pagebreak
+
+## HiSeq Preformance Analysis: % Clusters >= Q30
+
+Q30 percentage measures the error rate of sequencing. For each basepair sequenced, the sequencer assigns a quality score rating how likely it is called in error. This measures % bases >= Q30. Q30 relates to a 1 in 1,000 base pair miss-called. Q30 drops when lanes are overclustered.    
+<br>
+<br>
+
+
+```{r echo=FALSE}
+par(cex.axis=.6)
+boxplot(data=allHighoutput,q30~Quarterly, outline = TRUE, ylab = "% >= Q30",las=2)
+title("High-output % bases >= Q30",line=0.5)
+abline(h = 90, col = "red", lwd =1,lty=2)
+```
+
+* Q30 stats look decent overall, as expected!
+* Q1-2017 0% data-point was completely oversaturated and did not image. 
+
+``` {r echo=FALSE}
+par(cex.axis=.6)
+boxplot(data=allRapid,q30~Quarterly, outline = TRUE, ylab = "% >= Q30",las=2)
+title("Rapid-run  % bases >= Q30",line=0.5)
+abline(h = 90, col = "red", lwd =1,lty=2)
+```
+
+\pagebreak
+
+## HiSeq Preformance Analysis: Total Reads Pass Filter
+
+Total reads pass filter is perhaps the single most important statistic, as it directly corresponds to the depth of sequencing for each lane. Reads that pass filter are required to have passing Q30, and are highly-reliable reads.  
+<br>
+<br>
+
+
+```{r echo=FALSE}
+par(cex.axis=.6)
+boxplot(data=allHighoutput,PF~Quarterly, outline = TRUE, ylab = "Reads PF (Millions)",las=2)
+title("High-output Reads Pass Filter",line=0.5)
+abline(h = 250, col = "red", lwd =1,lty=2)
+```
+
+* HiSeq2500 v4 specs currently recommend 250 million reads
+
+```{r echo=FALSE}
+par(cex.axis=.6)
+boxplot(data=allRapid,PF~Quarterly, outline = TRUE, ylab = "Reads PF (Millions)",las=2)
+title("Rapid-run Reads Pass Filter",line=0.5)
+abline(h = 150, col = "red", lwd =1,lty=2)
+```
+
+* HiSeq2500 Rapid v2 specs currently recommend 150 million reads
+
+
+\pagebreak
+
+# 2.) 2016 HiSeq Preformance Analysis: 
+## HiSeq2500 phiX Spike-In Rates
+
+We reviewed BaseSpace results for 198 lanes of sequencing during 2016 on the HiSeq2500 platforms. Of these, 29 achieved the desired phiX alignment rates recommended by illumina for Propel certification.    
+
+```{r echo=FALSE,fig.width=6, fig.height=3.5 }
+boxplot(data=quarterly,ALIGNS~as.numeric(Quarter), outline = TRUE, names = c('Q1', 'Q2', 'Q3', 'Q4'), ylab = "Alignment Percentage")
+abline(h = .8, col = "red", lwd =1,lty=2)
+abline(h = 1.2, col = "red", lwd =1,lty=2)
+
+kable(summaryphix,caption="a knitr table")
+```
+
+* Cutoffs are set at 0.8% and 1.2% alignment per Propel recommendations.
+* Q4 showed improvement, removed occurances of outliers.
+
+## HiSeq 2500 Sample Pooling (CV)
+```{r echo=FALSE,fig.width=6, fig.height=3.5 }
+boxplot(data=quarterly,CVS~as.numeric(Quarter), outline = TRUE, names = c('Q1', 'Q2', 'Q3', 'Q4'), ylab = "CV Scores")
+title("CV Score per lane of sequencing", line =0.4)
+abline(h = .25, col = "red", lwd =1,lty=2)
+```
+
+* Data should fall below the 0.25 cutoff. 
+* Reduced the number of lanes with very poor pooling
+
+\pagebreak
+
+# 3.) MiSeq Preformance Analysis
+## MiSeq phiX Spike-In rates over time
+
+We reviewed BaseSpace results for 70 lanes on the MiSeq platforms (excludes Nano runs). We used variable rates of spike-in, however we should see most results fall into two target zones, around 20% and 40% spike-in.  
+
+```{r results="asis",echo=FALSE}
+par(cex.axis=.6,oma=c(4,0,0,0))
+#load in data by quarter
+boxplot(data=miseq,phiX~Quarterly, outline = TRUE, ylab = "Percent phiX",ylim=c(0,100),las=2)
+title("MiSeq % phiX aligned", line=0.4)
+abline(h = 18.0, col = "red", lwd =1,lty=2)
+abline(h = 22.0, col = "red", lwd =1,lty=2)
+abline(h = 37.5, col = "red", lwd =1,lty=2)
+abline(h = 42.5, col = "red", lwd =1,lty=2)
+```
+
+* Cutoffs are set at 18-22% and 37.5-42.5% alignment.
+* Q3 had an 88% alignment (856) pool which was a major controversy.
+
+## Reads Pass Filtering
+
+Illumina recommends greater than 20 million reads per flowcell lane, while the WHI Cutoff is 10 million. It is largely dependent on how conserved a sequence we are targeting.    
+
+```{r echo=FALSE}
+par(cex.axis=.6,oma=c(4,0,0,0))
+boxplot(data=miseq,PF~Quarterly, outline = TRUE, ylab = "Reads PF (millions)",las=2)
+title("MiSeq Reads Pass Filter",line=0.25)
+abline(h = 10, col = "red", lwd =1,lty=2)
+abline(h = 22, col = "red", lwd =1,lty=2)
+```
+
+* Overall we are hitting spec for pass filter reads.
