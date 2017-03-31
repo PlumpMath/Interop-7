@@ -14,8 +14,7 @@ import logging
 from RapidRunParser import RapidRunParser
 from MiSeqRunParser import MiSeqRunParser
 from HighOutputRunParser import HighOutputRunParser
-import matplotlib
-import numpy as np
+
 
 
 #Abstraction
@@ -40,7 +39,7 @@ if __name__ == '__main__':
 
     # Capture the directory from the command line
 
-    #rtnum = sys.argv[2]
+    rtnum = sys.argv[2]
 
     Runinfo = "/data/BaseSpace/Runs/" + file.rstrip() + "/Files/RunInfo.xml"
     xmldoc = minidom.parse(Runinfo)
@@ -53,11 +52,11 @@ if __name__ == '__main__':
     RunDate = element[0].firstChild.nodeValue
 
     #get RT
-    d = {}
+    """d = {}
     with open("/data/interop-github/Interop/fcid_ticket.txt") as f:
         for line in f:
             (RT,TempFCID) = line.rstrip().split("\t")
-            d[TempFCID] = RT
+            d[TempFCID] = RT"""
            
     #get specs of each type of sequencing run
     element = xmldoc.getElementsByTagName('FlowcellLayout')
@@ -96,7 +95,7 @@ if __name__ == '__main__':
     (Aligns,Q30s,Densities,Clusters,Totals,PFs)  = parser.collectSummary()
 
       
-    i = 0    
+    i = 0
     for i in range(1,int(LC)+1):
         try:
             
@@ -111,7 +110,8 @@ if __name__ == '__main__':
 
 
 ## Start of RT logging, leave commented off please
-"""
+
+
     set_logging('debug')
     logger = logging.getLogger('rtkit')
     resource = RTResource('http://gbcrt.ccr.buffalo.edu:8080/REST/1.0/', 'julienka', 'Northport12!', QueryStringAuthenticator)
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     for i in range(1,int(LC)+1):
         try:
             rtnum = d[FCID]
-            print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFS[int(i)],Totals[int(i)])
+           #print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFS[int(i)],Totals[int(i)])
             content = {
                 'content': {
                 'CF.{Lane '+str(i)+' CV}': CVS[int(i)],
@@ -137,6 +137,5 @@ if __name__ == '__main__':
                 logger.error(e.response.parsed)
 
         except:
-            print "%s\t%s\t%s\t%s\t%s\t%s\t%s\tNan\tNan\tNan" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)])
+            #print "%s\t%s\t%s\t%s\t%s\t%s\t%s\tNan\tNan\tNan" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)])
 
-"""
