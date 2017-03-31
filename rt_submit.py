@@ -99,7 +99,6 @@ if __name__ == '__main__':
             #ignores no RT number errors
             print "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (RunDate,runtype,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFs[int(i)],Totals[int(i)])
         except:
-            
             #ignores no RT number errors
             print "%s,%s,%s,%s,%s,%s,%s,%s,Nan,%s,%s" % (RunDate,runtype,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],PFs[int(i)],Totals[int(i)])
 
@@ -107,7 +106,7 @@ if __name__ == '__main__':
     set_logging('debug')
     logger = logging.getLogger('rtkit')
     resource = RTResource('http://gbcrt.ccr.buffalo.edu:8080/REST/1.0/', 'julienka', 'Northport12!', QueryStringAuthenticator)
-    
+
     i = 0
     for i in range(1,int(LC)+1):
         try:
@@ -116,7 +115,7 @@ if __name__ == '__main__':
             content = {
                 'content': {
                 'CF.{Lane '+str(i)+' CV}': CVS[int(i)],
-                'CF.{Lane '+str(i)+' Pass Filter}': PFS[int(i)],
+                'CF.{Lane '+str(i)+' Pass Filter}': PFs[int(i)],
                 'CF.{Lane '+str(i)+' Cluster Density}': Clusters[int(i)]      
                 } 
             }
