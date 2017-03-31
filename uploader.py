@@ -116,7 +116,7 @@ if __name__ == '__main__':
             content = {
                 'content': {
                 'CF.{Lane '+str(i)+' CV}': CVS[int(i)],
-                'CF.{Lane '+str(i)+' Pass Filter}': PFS[int(i)],
+                'CF.{Lane '+str(i)+' Pass Filter}': PFs[int(i)],
                 'CF.{Lane '+str(i)+' Cluster Density}': Clusters[int(i)]      
                 } 
             }
