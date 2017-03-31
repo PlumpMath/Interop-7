@@ -42,7 +42,6 @@ if __name__ == '__main__':
 
     # Capture the directory from the command line
 
-    file = sys.argv[1]
     #rtnum = sys.argv[2]
 
     Runinfo = "/data/BaseSpace/Runs/" + file.rstrip() + "/Files/RunInfo.xml"
