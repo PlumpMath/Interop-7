@@ -16,7 +16,6 @@ class TestRapidRunParsers(TestCase):
 
     def test_collectSummary(self):
         # Testing proper alignment return rate.
-        print RapidRunParser.collectSummary(self.runParser)[0]
         self.assertEquals(RapidRunParser.collectSummary(self.runParser)[0],[0,"1.94","1.62"],"% Alignment stats are incorrect")
         self.assertEquals(RapidRunParser.collectSummary(self.runParser)[1],[0,"98.28","98.01"],"% q30 stats are incorrect")
         self.assertEquals(RapidRunParser.collectSummary(self.runParser)[2], [0, "710","796"], "Cluster Density is incorrect")

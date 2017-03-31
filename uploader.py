@@ -15,8 +15,6 @@ from RapidRunParser import RapidRunParser
 from MiSeqRunParser import MiSeqRunParser
 from HighOutputRunParser import HighOutputRunParser
 
-
-
 #Abstraction
 class DataParser:
     def __init__(self,input_file):
@@ -98,18 +96,12 @@ if __name__ == '__main__':
     i = 0
     for i in range(1,int(LC)+1):
         try:
-            
             #ignores no RT number errors
             print "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (RunDate,runtype,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFs[int(i)],Totals[int(i)])
-          #print "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (RunDate,runtype,d[FCID],FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFS[int(i)],Totals[int(i)])
         except:
             
             #ignores no RT number errors
             print "%s,%s,%s,%s,%s,%s,%s,%s,Nan,%s,%s" % (RunDate,runtype,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],PFs[int(i)],Totals[int(i)])
-            #print "%s,%s,%s,%s,%s,%s,%s,%s,%s,Nan,Nan,Nan" % (RunDate,runtype,d[FCID],FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)])
-
-
-## Start of RT logging, leave commented off please
 
 
     set_logging('debug')
