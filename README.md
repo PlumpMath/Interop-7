@@ -13,7 +13,7 @@ upload_wrapper.sh [path to BaseSpace/Runs] [RT-Number]
 
 This calls rt_submit.py to process.
 
-###Required:
+### Required:
 
 illumina/Interop commands : https://github.com/Illumina/interop
 1. interop-buld/src/apps/summary
