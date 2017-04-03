@@ -5,7 +5,7 @@
 
 import sys
 from xml.dom import minidom
-import linecache
+import getopt
 from rtkit.resource import RTResource
 from rtkit.authenticators import QueryStringAuthenticator
 from rtkit.errors import RTResourceError
@@ -108,13 +108,15 @@ if __name__ == '__main__':
     resource = RTResource('http://gbcrt.ccr.buffalo.edu:8080/REST/1.0/', 'julienka', 'Northport12!', QueryStringAuthenticator)
 
     i = 0
+    file = open('.datafile.txt', 'w')
     for i in range(1,int(LC)+1):
         try:
             rtnum = d[FCID]
-           #print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFS[int(i)],Totals[int(i)])
+            file.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFS[int(i)],Totals[int(i)]))
             content = {
                 'content': {
                 'CF.{Lane '+str(i)+' CV}': CVS[int(i)],
+
                 'CF.{Lane '+str(i)+' Pass Filter}': PFs[int(i)],
                 'CF.{Lane '+str(i)+' Cluster Density}': Clusters[int(i)]      
                 } 
@@ -128,6 +130,5 @@ if __name__ == '__main__':
                 logger.error(e.response.parsed)
 
         except:
-            #print "%s\t%s\t%s\t%s\t%s\t%s\t%s\tNan\tNan\tNan" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)])
+            file.write(print "%s\t%s\t%s\t%s\t%s\t%s\t%s\tNan\tNan\tNan" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)]))
 
-###TODO add rdata file
