@@ -38,11 +38,11 @@ if __name__ == '__main__':
     #options -f -rt --upload
     for opt, arg in options:
         if opt in ('-f'):
-            file = arg
+            self.file = arg
         elif opt in ('-rt'):
-            rtnum = arg
+            self.rtnum = arg
         elif opt in ('--upload'):
-            upload = True
+            self.upload = True
 
     #file = sys.argv[1]
     #Set up our abstract parsing object which will later be assigned to a flowcell parsing strategy
