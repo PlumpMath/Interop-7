@@ -105,15 +105,7 @@ if __name__ == '__main__':
     (Aligns,Q30s,Densities,Clusters,Totals,PFs)  = parser.collectSummary()
 
       
-    i = 0
-    for i in range(1,int(LC)+1):
-        try:
-            #ignores no RT number errors
-            print "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (RunDate,runtype,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFs[int(i)],Totals[int(i)])
-        except:
-            #ignores no RT number errors
-            print "%s,%s,%s,%s,%s,%s,%s,%s,Nan,%s,%s" % (RunDate,runtype,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],PFs[int(i)],Totals[int(i)])
-
+    data = open('.'+ file + '.datafile.txt', 'w')
     if self.upload == True:
 
         set_logging('debug')
@@ -121,7 +113,6 @@ if __name__ == '__main__':
         resource = RTResource('http://gbcrt.ccr.buffalo.edu:8080/REST/1.0/', 'julienka', 'Northport12!', QueryStringAuthenticator)
 
         i = 0
-        data = open('.' + file + '.datafile.txt', 'w')
         for i in range(1,int(LC)+1):
             try:
                 rtnum = d[FCID]
@@ -149,8 +140,8 @@ if __name__ == '__main__':
         for i in range(1, int(LC) + 1):
             try:
                 # ignores no RT number errors
-                print "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (RunDate, runtype, FCID, i, Aligns[int(i)], Q30s[int(i)], Densities[int(i)], Clusters[int(i)],CVS[int(i)], PFs[int(i)], Totals[int(i)])
+                data.write("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (RunDate, runtype, FCID, i, Aligns[int(i)], Q30s[int(i)], Densities[int(i)], Clusters[int(i)],CVS[int(i)], PFs[int(i)], Totals[int(i)]))
             except:
                 # ignores no RT number errors
-                print "%s,%s,%s,%s,%s,%s,%s,%s,Nan,%s,%s" % (RunDate, runtype, FCID, i, Aligns[int(i)], Q30s[int(i)], Densities[int(i)], Clusters[int(i)],PFs[int(i)], Totals[int(i)])
-
+                data.write("%s,%s,%s,%s,%s,%s,%s,%s,Nan,%s,%s" % (RunDate, runtype, FCID, i, Aligns[int(i)], Q30s[int(i)], Densities[int(i)], Clusters[int(i)],PFs[int(i)], Totals[int(i)]))
+        data.close()
