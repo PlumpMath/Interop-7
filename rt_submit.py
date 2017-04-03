@@ -34,7 +34,7 @@ if __name__ == '__main__':
                                                              'rtnum=',
                                                               'upload'
                                                              ])
-    #options
+    #options -f -rt --upload
     for opt, arg in options:
         if opt in ('-f'):
             self.file = arg
