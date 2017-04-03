@@ -34,14 +34,15 @@ if __name__ == '__main__':
                                                              'rtnum=',
                                                               'upload'
                                                              ])
+
     #options -f -rt --upload
     for opt, arg in options:
         if opt in ('-f'):
-            self.file = arg
+            file = arg
         elif opt in ('-rt'):
-            self.rtnum = arg
+            rtnum = arg
         elif opt in ('--upload'):
-            self.upload = True
+            upload = True
 
     #file = sys.argv[1]
     #Set up our abstract parsing object which will later be assigned to a flowcell parsing strategy
@@ -133,7 +134,7 @@ if __name__ == '__main__':
                     logger.error(e.response.status)
                     logger.error(e.response.parsed)
             except:
-                data.write(print "%s\t%s\t%s\t%s\t%s\t%s\t%s\tNan\tNan\tNan" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)]))
+                data.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\tNan\tNan\tNan" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)]))
         data.close()
     else:
         i = 0
