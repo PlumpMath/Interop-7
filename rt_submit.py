@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
         set_logging('debug')
         logger = logging.getLogger('rtkit')
-        resource = RTResource('http://gbcrt.ccr.buffalo.edu:8080/REST/1.0/', 'julienka', 'Northport12!', QueryStringAuthenticator)
+        resource = RTResource('[enter server]/REST/1.0/', [enter username], [enter password], QueryStringAuthenticator)
 
         i = 0
         for i in range(1,int(LC)+1):
