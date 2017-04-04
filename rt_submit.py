@@ -5,7 +5,7 @@
 
 import sys
 from xml.dom import minidom
-import getopt
+import argparse
 from rtkit.resource import RTResource
 from rtkit.authenticators import QueryStringAuthenticator
 from rtkit.errors import RTResourceError
@@ -30,16 +30,16 @@ class DataParser:
     
 # Main Method
 if __name__ == '__main__':
-    options, remainder = getopt.getopt(sys.argv[1:], 'f:rt', ['file=','rtnum=','upload'])
 
-    #options -f -rt --upload
-    for opt, arg in options:
-        if opt in ('-f'):
-            file = arg
-        elif opt in ('-rt'):
-            rtnum = arg
-        elif opt in ('--upload'):
-            upload = True
+
+    parse = argparse.ArgumentParser(description='need for experiment name and rtnum')
+    parse.add_argument('-f','--file', help='add experiment name', required = True)
+    parse.add_argument('-rt','--rtnum', help='add rt number', required = True)
+    parse.add_argument('-u','--upload', help='upload to RT', required = True)
+    args = vars(parse.parse_args())
+
+    args['file'] = file
+    args['rtnum'] = rtnum
 
     #file = sys.argv[1]
     #Set up our abstract parsing object which will later be assigned to a flowcell parsing strategy
@@ -59,12 +59,6 @@ if __name__ == '__main__':
     element = xmldoc.getElementsByTagName('Date')
     RunDate = element[0].firstChild.nodeValue
 
-    #get RT
-    """d = {}
-    with open("/data/interop-github/Interop/fcid_ticket.txt") as f:
-        for line in f:
-            (RT,TempFCID) = line.rstrip().split("\t")
-            d[TempFCID] = RT"""
            
     #get specs of each type of sequencing run
     element = xmldoc.getElementsByTagName('FlowcellLayout')
@@ -106,7 +100,7 @@ if __name__ == '__main__':
     data = open('.'+ file + '.datafile.txt', 'w')
 
     # Boolean decision to upload to RT or not, requires a command line flag to be set, otherwise we will skip the upload
-    if self.upload == True:
+    if args['upload'] == "True":
 
         set_logging('debug')
         logger = logging.getLogger('rtkit')
