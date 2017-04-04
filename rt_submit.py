@@ -30,10 +30,7 @@ class DataParser:
     
 # Main Method
 if __name__ == '__main__':
-    options, remainder = getopt.getopt(sys.argv[1:], 'f:rt', ['file=',
-                                                             'rtnum=',
-                                                              'upload'
-                                                             ])
+    options, remainder = getopt.getopt(sys.argv[1:], 'f:rt', ['file=','rtnum=','upload'])
 
     #options -f -rt --upload
     for opt, arg in options:
@@ -44,7 +41,6 @@ if __name__ == '__main__':
         elif opt in ('--upload'):
             upload = True
 
-    print(file,rtnum)
     #file = sys.argv[1]
     #Set up our abstract parsing object which will later be assigned to a flowcell parsing strategy
     parser = DataParser(file)
@@ -108,6 +104,8 @@ if __name__ == '__main__':
 
       
     data = open('.'+ file + '.datafile.txt', 'w')
+
+    # Boolean decision to upload to RT or not, requires a command line flag to be set, otherwise we will skip the upload
     if self.upload == True:
 
         set_logging('debug')
@@ -122,7 +120,6 @@ if __name__ == '__main__':
                 content = {
                     'content': {
                     'CF.{Lane '+str(i)+' CV}': CVS[int(i)],
-
                     'CF.{Lane '+str(i)+' Pass Filter}': PFs[int(i)],
                     'CF.{Lane '+str(i)+' Cluster Density}': Clusters[int(i)]
                     }
