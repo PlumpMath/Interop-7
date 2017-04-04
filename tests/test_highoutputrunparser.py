@@ -4,9 +4,9 @@ from HighOutputRunParser import HighOutputRunParser
 
 class TestHighOutputRunParser(TestCase):
     def setUp(self):
-        self.runParser = HighoutputRunParser("./Rapid_sample_H7J5LBCXY.summary.csv")
-        self.runParser.indexSummaryFile = "./Rapid_sample_H7J5LBCXY.index-summary.csv"
-        self.runParser.summaryfile = "./Rapid_sample_H7J5LBCXY.summary.csv"
+        self.runParser = HighoutputRunParser("./Highoutput_sample_CAPLTANXX.summary.csv")
+        self.runParser.indexSummaryFile = "./Highoutput_sample_CAPLTANXX.index-summary.csv"
+        self.runParser.summaryfile = "./Highoutput_sample_CAPLTANXX.summary.csv"
 
     def test_test(self):
         self.assertEquals(RapidRunParser.test(self.runParser),'Parsing as Rapid Run')
