@@ -5,7 +5,7 @@
 
 import sys
 from xml.dom import minidom
-import linecache
+import getopt
 from rtkit.resource import RTResource
 from rtkit.authenticators import QueryStringAuthenticator
 from rtkit.errors import RTResourceError
@@ -30,14 +30,28 @@ class DataParser:
     
 # Main Method
 if __name__ == '__main__':
+    options, remainder = getopt.getopt(sys.argv[1:], 'f:rt', ['file=',
+                                                             'rtnum=',
+                                                              'upload'
+                                                             ])
 
-    file = sys.argv[1]
+    #options -f -rt --upload
+    for opt, arg in options:
+        if opt in ('-f'):
+            file = arg
+        elif opt in ('-rt'):
+            rtnum = arg
+        elif opt in ('--upload'):
+            upload = True
+
+    print(file,rtnum)
+    #file = sys.argv[1]
     #Set up our abstract parsing object which will later be assigned to a flowcell parsing strategy
     parser = DataParser(file)
 
     # Capture the directory from the command line
 
-    rtnum = sys.argv[2]
+    #rtnum = sys.argv[2]
 
     Runinfo = "/data/BaseSpace/Runs/" + file.rstrip() + "/Files/RunInfo.xml"
     xmldoc = minidom.parse(Runinfo)
@@ -93,41 +107,43 @@ if __name__ == '__main__':
     (Aligns,Q30s,Densities,Clusters,Totals,PFs)  = parser.collectSummary()
 
       
-    i = 0
-    for i in range(1,int(LC)+1):
-        try:
-            #ignores no RT number errors
-            print "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (RunDate,runtype,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFs[int(i)],Totals[int(i)])
-        except:
-            #ignores no RT number errors
-            print "%s,%s,%s,%s,%s,%s,%s,%s,Nan,%s,%s" % (RunDate,runtype,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],PFs[int(i)],Totals[int(i)])
+    data = open('.'+ file + '.datafile.txt', 'w')
+    if self.upload == True:
 
+        set_logging('debug')
+        logger = logging.getLogger('rtkit')
+        resource = RTResource('http://gbcrt.ccr.buffalo.edu:8080/REST/1.0/', 'julienka', 'Northport12!', QueryStringAuthenticator)
 
-    set_logging('debug')
-    logger = logging.getLogger('rtkit')
-    resource = RTResource('http://gbcrt.ccr.buffalo.edu:8080/REST/1.0/', 'julienka', 'Northport12!', QueryStringAuthenticator)
-
-    i = 0
-    for i in range(1,int(LC)+1):
-        try:
-            rtnum = d[FCID]
-           #print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFS[int(i)],Totals[int(i)])
-            content = {
-                'content': {
-                'CF.{Lane '+str(i)+' CV}': CVS[int(i)],
-                'CF.{Lane '+str(i)+' Pass Filter}': PFs[int(i)],
-                'CF.{Lane '+str(i)+' Cluster Density}': Clusters[int(i)]      
-                } 
-            }
+        i = 0
+        for i in range(1,int(LC)+1):
             try:
-                response = resource.post(path='ticket/' + rtnum + '/edit', payload=content,)
-                logger.info(response.parsed)
-            except RTResourceError as e:
-                logger.error(e.response.status_int)
-                logger.error(e.response.status)
-                logger.error(e.response.parsed)
+                rtnum = d[FCID]
+                data.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)],CVS[int(i)],PFS[int(i)],Totals[int(i)]))
+                content = {
+                    'content': {
+                    'CF.{Lane '+str(i)+' CV}': CVS[int(i)],
 
-        except:
-            #print "%s\t%s\t%s\t%s\t%s\t%s\t%s\tNan\tNan\tNan" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)])
-
-#TODO add rdata file
+                    'CF.{Lane '+str(i)+' Pass Filter}': PFs[int(i)],
+                    'CF.{Lane '+str(i)+' Cluster Density}': Clusters[int(i)]
+                    }
+                }
+                try:
+                    response = resource.post(path='ticket/' + rtnum + '/edit', payload=content,)
+                    logger.info(response.parsed)
+                except RTResourceError as e:
+                    logger.error(e.response.status_int)
+                    logger.error(e.response.status)
+                    logger.error(e.response.parsed)
+            except:
+                data.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\tNan\tNan\tNan" % (rtnum,FCID,i,Aligns[int(i)],Q30s[int(i)],Densities[int(i)],Clusters[int(i)]))
+        data.close()
+    else:
+        i = 0
+        for i in range(1, int(LC) + 1):
+            try:
+                # ignores no RT number errors
+                data.write("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (RunDate, runtype, FCID, i, Aligns[int(i)], Q30s[int(i)], Densities[int(i)], Clusters[int(i)],CVS[int(i)], PFs[int(i)], Totals[int(i)]))
+            except:
+                # ignores no RT number errors
+                data.write("%s,%s,%s,%s,%s,%s,%s,%s,Nan,%s,%s" % (RunDate, runtype, FCID, i, Aligns[int(i)], Q30s[int(i)], Densities[int(i)], Clusters[int(i)],PFs[int(i)], Totals[int(i)]))
+        data.close()
