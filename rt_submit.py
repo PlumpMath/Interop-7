@@ -30,10 +30,15 @@ class DataParser:
     
 # Main Method
 if __name__ == '__main__':
+
+    def usage():
+        print sys.exit(__doc__)
+
     try:
         options, remainder = getopt.getopt(sys.argv[1:], 'f:rt', ['file=','rtnum=','upload'])
     except getopt.GetoptError:
         usage()
+
 
     #options -f -rt --upload
     for opt, arg in options:
